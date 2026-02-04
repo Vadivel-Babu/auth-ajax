@@ -1,18 +1,50 @@
-const ul = document.querySelector("ul");
+$(document).ready(function () {
+  let token = localStorage.getItem("session");
+  console.log(token);
 
-async function data() {
-  try {
-    const response = await fetch("../php/profile.php");
-    const data = await response.json();
-    data?.forEach((element) => {
-      const newItem = document.createElement("li");
-      newItem.textContent = element;
-      ul.appendChild(newItem);
-    });
-
-    console.log(data);
-  } catch (error) {
-    console.log(error);
+  if (!token) {
+    window.location = "login.html";
+    return;
   }
-}
-data();
+
+  loadProfile();
+
+  function loadProfile() {
+    $.ajax({
+      url: "php/getProfile.php",
+      method: "GET",
+      data: { token: token },
+      success: function (res) {
+        let user = JSON.parse(res);
+
+        $("#name").val(user.name);
+        $("#age").val(user.age);
+        $("#dob").val(user.dob);
+        $("#contact").val(user.contact);
+      },
+    });
+  }
+
+  //handle update the user details
+  $("#updateBtn").click(function () {
+    $.ajax({
+      url: "php/updateProfile.php",
+      method: "POST",
+      data: {
+        token: token,
+        age: $("#age").val(),
+        dob: $("#dob").val(),
+        contact: $("#contact").val(),
+      },
+      success: function () {
+        alert("Profile updated");
+      },
+    });
+  });
+});
+
+//handle logout
+$("#logoutBtn").click(function () {
+  localStorage.removeItem("session");
+  window.location = "index.html";
+});
