@@ -1,7 +1,7 @@
 $(document).ready(function () {
   let token = localStorage.getItem("session");
 
-  if (token) {
+  if (!token) {
     window.location = "index.html";
     return;
   }

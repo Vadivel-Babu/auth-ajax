@@ -2,10 +2,10 @@ $(document).ready(function () {
   let token = localStorage.getItem("session");
   console.log(token);
 
-  if (!token) {
-    window.location = "login.html";
-    return;
-  }
+  // if (!token) {
+  //   window.location = "login.html";
+  //   return;
+  // }
 
   loadProfile();
 
