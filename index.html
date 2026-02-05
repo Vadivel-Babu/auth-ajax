@@ -13,25 +13,28 @@
     <title>profile</title>
   </head>
   <body>
-    <h1 class="text-center">profile</h1>
+    <h1 class="text-center mt-3">profile</h1>
     <ul></ul>
     <div class="container d-flex justify-content-center">
       <div class="card" style="width: 18rem">
         <div class="card-body">
           <h5 class="card-title">Name: Jhon</h5>
-          <h6 class="card-subtitle mb-2 text-body-secondary">
+          <h6 class="card-subtitle text-body-secondary my-3">
             Email: jhon@mail.com
           </h6>
           <p class="card-text">DOB: 11.02.2009</p>
           <p class="card-text">Contact: +91 0000000</p>
-          <button
-            type="button"
-            class="btn btn-warning"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            Edit
-          </button>
+          <div class="d-flex justify-content-between">
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              Edit
+            </button>
+            <button type="button" class="btn btn-danger">logout</button>
+          </div>
         </div>
       </div>
     </div>
@@ -75,6 +78,6 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="./js/profile.js"></script>
+    <!-- <script src="/js/profile.js"></script> -->
   </body>
 </html>
