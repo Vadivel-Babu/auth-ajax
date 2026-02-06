@@ -1,8 +1,8 @@
 $(document).ready(function () {
   let token = localStorage.getItem("session");
 
-  if (!token) {
-    window.location = "index.html";
+  if (token) {
+    window.location.href = "index.html";
     return;
   }
   $("#loginBtn").click(function () {
@@ -23,10 +23,11 @@ $(document).ready(function () {
       },
       success: function (res) {
         let data = JSON.parse(res);
+        console.log(data);
 
         if (data.status === "success") {
           localStorage.setItem("session", data.token);
-          window.location = "profile.html";
+          window.location.href = "index.html";
         } else {
           alert("Invalid login");
         }
