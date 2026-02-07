@@ -22,11 +22,9 @@ $(document).ready(function () {
         password: $("#password").val(),
       },
       success: function (res) {
-        let data = JSON.parse(res);
-        console.log(data);
-
-        if (data.status === "success") {
-          localStorage.setItem("session", data.token);
+        if (res.status === "success") {
+          localStorage.setItem("session", res.token);
+          localStorage.setItem("user", JSON.stringify(res.user));
           window.location.href = "index.html";
         } else {
           alert("Invalid login");

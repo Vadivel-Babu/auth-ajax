@@ -1,6 +1,7 @@
 $(document).ready(function () {
   let token = localStorage.getItem("session");
-  console.log(token);
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user);
 
   if (!token) {
     window.location.href = "login.html";
@@ -11,15 +12,18 @@ $(document).ready(function () {
 
   function loadProfile() {
     $.ajax({
-      url: "php/getProfile.php",
+      url: "php/profile.php",
       method: "GET",
-      data: { token: token },
+      data: { token: token, id: user.id },
       success: function (res) {
-        let user = JSON.parse(res);
-        $("#name").val(user.name);
-        $("#age").val(user.age);
-        $("#dob").val(user.dob);
-        $("#contact").val(user.contact);
+        let user = res.user;
+        $("#name-text").text(user.name ?? "no name");
+        $("#email-text").text(user.email ?? "no mail");
+        $("#dob-text").text(user.dob ?? "00.00.0000");
+        $("#contact-text").text(user.contact ?? "+00 00000 00000");
+
+        $("#name").val(user.name ?? "no name");
+        $("#email").val(user.email ?? "no mail");
       },
     });
   }
@@ -31,9 +35,9 @@ $(document).ready(function () {
       method: "POST",
       data: {
         token: token,
-        age: $("#age").val(),
-        dob: $("#dob").val(),
-        contact: $("#contact").val(),
+        id: user.id,
+        name: $("#name").val(),
+        email: $("#email").val(),
       },
       success: function () {
         alert("Profile updated");
@@ -45,5 +49,6 @@ $(document).ready(function () {
 //handle logout
 $("#logoutBtn").click(function () {
   localStorage.removeItem("session");
+  localStorage.removeItem("user");
   window.location.href = "login.html";
 });
