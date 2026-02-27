@@ -19,11 +19,13 @@ $(document).ready(function () {
         let user = res.user;
         $("#name-text").text(user.name ?? "no name");
         $("#email-text").text(user.email ?? "no mail");
-        $("#dob-text").text(user.dob ?? "00.00.0000");
-        $("#contact-text").text(user.contact ?? "+00 00000 00000");
+        $("#dob-text").text(user.age ?? "00");
+        $("#contact-text").text(user.contact ?? " - ");
 
         $("#name").val(user.name ?? "no name");
         $("#email").val(user.email ?? "no mail");
+        $("#age").val(user.age ?? "00");
+        $("#contact").val(user.contact ?? "no number");
       },
     });
   }
@@ -38,9 +40,12 @@ $(document).ready(function () {
         id: user.id,
         name: $("#name").val(),
         email: $("#email").val(),
+        age: $("#age").val(),
+        contact: $("#contact").val(),
       },
-      success: function () {
-        alert("Profile updated");
+      success: function (res) {
+        alert(res.message);
+        loadProfile();
       },
     });
   });

@@ -22,7 +22,7 @@
           <h6 class="card-subtitle text-body-secondary my-3">
             Email: <span id="email-text"></span>
           </h6>
-          <p class="card-text">DOB: <span id="dob-text"></span></p>
+          <p class="card-text">Age: <span id="dob-text">45</span></p>
           <p class="card-text">Contact: <span id="contact-text"></span></p>
           <div class="d-flex justify-content-between">
             <button
@@ -81,6 +81,15 @@
               />
             </div>
             <div class="mb-3">
+              <label for="age" class="form-label">Age</label>
+              <input
+                type="number"
+                class="form-control"
+                id="age"
+                placeholder="Enter your age"
+              />
+            </div>
+            <div class="mb-3">
               <label for="contact" class="form-label">Contact</label>
               <input
                 type="text"
@@ -98,7 +107,14 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-info">update</button>
+            <button
+              type="button"
+              data-bs-dismiss="modal"
+              id="updateBtn"
+              class="btn btn-info"
+            >
+              update
+            </button>
           </div>
         </div>
       </div>
