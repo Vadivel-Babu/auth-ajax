@@ -9,11 +9,15 @@ $(document).ready(function () {
         password: $("#password").val(),
       },
       success: function (res) {
-        alert("Registration successful");
+        alert(res.message);
         window.location = "index.html";
       },
-      error: function () {
-        alert("Registration failed");
+      error: function (res) {
+        if (res.responseJSON.message) {
+          alert(res.responseJSON.message);
+        } else {
+          alert("registeration failed");
+        }
       },
     });
   });

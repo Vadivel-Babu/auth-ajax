@@ -1,5 +1,6 @@
 <?php
 header("Content-Type: application/json");
+header("Accept: application/json");
 
 require "db.php";   // DB connection
 
@@ -12,25 +13,32 @@ if (!isset($_POST['token'])) {
 
 $token = $_POST['token'];
 $userId = $_POST['id'];
-$name = $_POST['name'];
+$name = trim($_POST['name']) ?? '';
 $email = $_POST['email'];
 $contact = $_POST['contact'];
 $age = $_POST['age'];
 
-// $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, contact = ? WHERE id = ?");
+if ($name === "") {
+   http_response_code(400);
+   echo json_encode(["status" => "error", "message" => "name reqired"]);
+   exit;
+}
+//$mongoUri = getenv('MONGO_URI') ?: 'mongodb://127.0.0.1:27017';
+$mongoUri="mongodb+srv://vadivelbabu31_db_user:2gUyS2XDeG0lrVR7@cluster0.hrfomwk.mongodb.net/guvi_task?retryWrites=true&w=majority";
+$stmt = $conn->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
 
-// $stmt->bind_param(
-//     "sssi",
-//     $name,
-//     $email,
-//     $contact,
-//     $userId
-// );
-// $stmt->execute();
-try {
-    $manager = new MongoDB\Driver\Manager("mongodb://127.0.0.1:27017");
-
-    $database   = 'guvi_internship';     
+$stmt->bind_param(
+    "ssi",
+    $name,
+    $email,
+    $userId
+);
+$stmt->execute();
+$stmt->close();
+$conn->close();
+try {   
+    $manager = new MongoDB\Driver\Manager( $mongoUri);
+ 
     $collection = 'users';
 
   $filter = [
@@ -53,7 +61,7 @@ try {
     $bulk = new MongoDB\Driver\BulkWrite;
     $bulk->update($filter, $update, $options);
 
-    $result = $manager->executeBulkWrite("$database.$collection", $bulk);
+    $result = $manager->executeBulkWrite("guvi_task.$collection", $bulk);
 
 } catch (Throwable $e) {
     // Log but don't stop login
@@ -61,5 +69,3 @@ try {
 }
 
 echo json_encode(["status" => true, "message" => 'Profile updated']);
-// $stmt->close();
-// $conn->close();

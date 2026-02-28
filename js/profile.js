@@ -1,7 +1,6 @@
 $(document).ready(function () {
   let token = localStorage.getItem("session");
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
 
   if (!token) {
     window.location.href = "login.html";
@@ -15,8 +14,10 @@ $(document).ready(function () {
       url: "php/profile.php",
       method: "GET",
       data: { token: token, id: user.id },
+      dataType: "json",
       success: function (res) {
-        let user = res.user;
+        const user = res.user;
+
         $("#name-text").text(user.name ?? "no name");
         $("#email-text").text(user.email ?? "no mail");
         $("#dob-text").text(user.age ?? "00");
@@ -47,13 +48,33 @@ $(document).ready(function () {
         alert(res.message);
         loadProfile();
       },
+      error: function (res) {
+        alert(res.responseJSON.message);
+        loadProfile();
+      },
     });
   });
-});
 
-//handle logout
-$("#logoutBtn").click(function () {
-  localStorage.removeItem("session");
-  localStorage.removeItem("user");
-  window.location.href = "login.html";
+  $("#logoutBtn").on("click", function () {
+    if (token) {
+      $.ajax({
+        url: "php/logout.php",
+        type: "POST",
+        data: { token: token },
+        success: function (res) {
+          localStorage.removeItem("session");
+          localStorage.removeItem("user");
+          window.location.href = "login.html";
+        },
+        error: function () {
+          // even if backend fails, still clear local
+          localStorage.removeItem("session");
+          localStorage.removeItem("user");
+          window.location.href = "login.html";
+        },
+      });
+    } else {
+      window.location.href = "index.html";
+    }
+  });
 });

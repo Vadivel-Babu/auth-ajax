@@ -1,22 +1,32 @@
 <?php
-header("Content-Type: application/json");
+//header("Content-Type: application/json");
+header("Accept: application/json");
 
 require "db.php";   // DB connection
+require "redis.php";
 
-
-
-if (!isset($_GET['token'])) {
-    echo json_encode(['message' => 'token missing']);
-    exit;
-}
 
 $token = $_GET['token'];
 
+if (empty($token)) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'No token']);
+    exit;
+}
+
+$sessionJson = $redis->get("session:$token");
+
+if (!$sessionJson) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid/expired token']);
+    exit;
+}
+//$mongoUri = getenv('MONGO_URI') ?: 'mongodb://127.0.0.1:27017';
+$mongoUri="mongodb+srv://vadivelbabu31_db_user:2gUyS2XDeG0lrVR7@cluster0.hrfomwk.mongodb.net/guvi_task?retryWrites=true&w=majority";
 
 try {
-    $manager = new MongoDB\Driver\Manager("mongodb://127.0.0.1:27017");
-
-    $database   = 'guvi_internship';           // your database name
+    $manager = new MongoDB\Driver\Manager($mongoUri);
+    
     $collection = 'users';
 
     $userId = $_GET['id'];  
@@ -30,7 +40,7 @@ try {
 
     $query = new MongoDB\Driver\Query($filter, $options);
 
-    $cursor = $manager->executeQuery("$database.$collection", $query);
+    $cursor = $manager->executeQuery("guvi_task.$collection", $query);
 
     $user = current($cursor->toArray());  // get first document as object
 

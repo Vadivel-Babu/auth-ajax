@@ -6,14 +6,6 @@ $(document).ready(function () {
     return;
   }
   $("#loginBtn").click(function () {
-    let email = $("#email").val().trim();
-    let password = $("#password").val().trim();
-
-    if (email === "" || password === "") {
-      alert("Email and Password are required");
-      return;
-    }
-
     $.ajax({
       url: "php/login.php",
       method: "POST",
@@ -26,9 +18,10 @@ $(document).ready(function () {
           localStorage.setItem("session", res.token);
           localStorage.setItem("user", JSON.stringify(res.user));
           window.location.href = "index.html";
-        } else {
-          alert("Invalid login");
         }
+      },
+      error: function (res) {
+        alert(res.responseJSON.message);
       },
     });
   });

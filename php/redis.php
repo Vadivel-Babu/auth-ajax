@@ -1,20 +1,13 @@
 <?php
 
-// $redis = new Redis();
-if (class_exists('Redis')) {
-    echo "Redis extension is LOADED!";
-} else {
-    echo "Redis extension NOT loaded.";
-}
+require_once __DIR__ . '/../vendor/autoload.php';  
 
-echo "<br><br>";
-phpinfo();   // check for "redis" section
+$redis = new Predis\Client([
+    'scheme'   => 'rediss',
+    'host'     => 'romantic-caribou-42148.upstash.io',
+    'port'     => 6379,
+    'password' => 'AaSkAAIncDE2OWU3ZTlmNzU5ODk0ODU4ODFkZTRiMWMxOTY0ZTUwMXAxNDIxNDg',
+    'database' => 0,
+]);
 
-// try {
-//     $redis->connect('127.0.0.1', 6379);
-//     $redis->set('test_key', 'Hello from Redis!');
-//     echo $redis->get('test_key');  // should print Hello from Redis!
-// } catch (Exception $e) {
-//     echo "Connection failed: " . $e->getMessage();
-// }
 ?>

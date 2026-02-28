@@ -1,14 +1,22 @@
 <?php
+header("Content-Type: application/json");
 include "db.php";
 
-$name = $_POST['name'] ?? '';
-$email = $_POST['email'] ?? '';
-$password = $_POST['password'] ?? '';
+$name = trim($_POST['name']) ?? '';
+$email = trim($_POST['email']) ?? '';
+$password = trim($_POST['password']) ?? '';
 
-if (!$name || !$email || !$password) {
-    echo json_encode(["status" => "error", "msg" => "All fields required"]);
-    exit;
+if ($email === "" || $password === "" || $name === "") {
+   http_response_code(400);
+   echo json_encode(["status" => "error", "message" => "all fields are reqired"]);
+   exit;
 }
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+   http_response_code(400);
+   echo json_encode(["status" => "error", "message" => "invalid email"]);
+   exit;
+} 
 
 // check if email exists
 $stmt = $conn->prepare("SELECT id FROM users WHERE email=?");
@@ -17,7 +25,8 @@ $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
-    echo json_encode(["status" => "error", "msg" => "Email exists"]);
+    http_response_code(409);
+    echo json_encode(["status" => "error", "message" => "Email exists"]);
     exit;
 }
 
@@ -29,7 +38,8 @@ $stmt = $conn->prepare(
 $stmt->bind_param("sss", $name, $email, $hashed);
 
 if ($stmt->execute()) {
-    echo json_encode(["status" => "success"]);
+    echo json_encode(["status" => "success","message" => "successfully registered"]);
 } else {
-    echo json_encode(["status" => "error"]);
+    http_response_code(500);
+    echo json_encode(["status" => "error","message"=>"somthing went wrong!"]);
 }
