@@ -29,3 +29,5 @@ A full-stack authentication system built for the GUVI internship task.
 - **Dependency management**: Composer (Predis for Redis)
 
 ## Credential
+- **login**:user@mail.com
+- **password**:user
