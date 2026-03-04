@@ -1,10 +1,11 @@
 <?php
 //header("Content-Type: application/json");
 header("Accept: application/json");
+require_once __DIR__ . '/../vendor/autoload.php'; 
 
 require "db.php";   // DB connection
 require "redis.php";
-
+use MongoDB\Client;
 
 $token = $_GET['token'];
 
@@ -25,24 +26,13 @@ if (!$sessionJson) {
 $mongoUri="mongodb+srv://vadivelbabu31_db_user:2gUyS2XDeG0lrVR7@cluster0.hrfomwk.mongodb.net/guvi_task?retryWrites=true&w=majority";
 
 try {
-    $manager = new MongoDB\Driver\Manager($mongoUri);
-    
-    $collection = 'users';
-
+    $client = new Client($mongoUri);
+    $db = $client->guvi_task;
+    $collection = $db->users;
     $userId = $_GET['id'];  
 
-    $filter = ['user_id' => (int)$userId];   // important: cast to int
-
-    $options = [
-        'projection' => ['_id' => 0],        // optional: exclude _id
-        'limit'      => 1                    // optional
-    ];
-
-    $query = new MongoDB\Driver\Query($filter, $options);
-
-    $cursor = $manager->executeQuery("guvi_task.$collection", $query);
-
-    $user = current($cursor->toArray());  // get first document as object
+    // Fetch one user
+    $user = $collection->findOne(['user_id' => $userId]);
 
     if ($user) {
         echo json_encode([

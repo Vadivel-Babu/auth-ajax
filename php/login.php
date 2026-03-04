@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';  // adjust path if needed
+
+
 include "db.php";
 include "redis.php";
 ini_set('display_errors', 1);
@@ -7,7 +10,7 @@ error_reporting(E_ALL);
 header("Content-Type: application/json");
 header("Accept: application/json");
 
-
+use MongoDB\Client;
 
 $email = trim($_POST['email']) ?? '';
 $password = trim($_POST['password']) ?? '';
@@ -61,30 +64,27 @@ $redis->expire("session:$token", 86400); // 24 hours
 
 
 try {
-  
-    $manager = new MongoDB\Driver\Manager($mongoUri);
-
-     
-    $collection = 'users';
+    $client = new Client($mongoUri);
+    $db = $client->guvi_task;  // your DB name
+    $collection = $db->users;        // or user_profiles
 
     $profileData = [
-        'user_id'    => (int)$user['id'],
-        'name'       => $user['name'],
-        'email'      => $user['email'],
+        'user_id'    => (int)($user['id'] ?? 0),
+        'name'       => $user['name'] ?? '',
+        'email'      => $user['email'] ?? '',
     ];
 
-    $bulk = new MongoDB\Driver\BulkWrite;
-    $bulk->update(
-        ['user_id' => (int)$user['id']],
+    $collection->updateOne(
+        ['user_id' => (int)($user['id'] ?? 0)],
         ['$set' => $profileData],
         ['upsert' => true]
     );
 
-    $manager->executeBulkWrite("guvi_task.$collection", $bulk);
+    // Success message for testing
+    echo "MongoDB profile updated successfully!";
 
-} catch (Throwable $e) {
-    // Log but don't stop login
-    error_log("MongoDB profile update failed: " . $e->getMessage());
+} catch (Exception $e) {
+    echo "MongoDB error: " . $e->getMessage();
 }
 
 echo json_encode([

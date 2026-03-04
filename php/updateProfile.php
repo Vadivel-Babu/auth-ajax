@@ -1,9 +1,9 @@
 <?php
 header("Content-Type: application/json");
 header("Accept: application/json");
-
+require_once __DIR__ . '/../vendor/autoload.php';
 require "db.php";   // DB connection
-
+use MongoDB\Client;
 
 
 if (!isset($_POST['token'])) {
@@ -37,31 +37,25 @@ $stmt->execute();
 $stmt->close();
 $conn->close();
 try {   
-    $manager = new MongoDB\Driver\Manager( $mongoUri);
- 
-    $collection = 'users';
+    $client = new Client($mongoUri);
 
-  $filter = [
-        'user_id' => (int)$userId   // usually from MySQL id
+    // Select database and collection
+    $db = $client->guvi_task;           // ← change to your actual DB name
+    $collection = $db->usere;
+
+    $updateData = [
+        'user_id'    => $userId,
+        'name'       => $user['name'] ?? '',
+        'email'      => $user['email'] ?? '',
+        'age'        => $user['age'] ?? null,
+        'contact'    => $user['contact'] ?? null,
     ];
 
-    // What to change
-    $update = [
-        '$set' => [
-            'name' => $name,
-            'contact' => $contact,
-            'age' => (int)$age
-        ]
-    ];
-
-    $options = [
-        'upsert' => false   // false = only update if exists, true = insert if not found
-    ];
-
-    $bulk = new MongoDB\Driver\BulkWrite;
-    $bulk->update($filter, $update, $options);
-
-    $result = $manager->executeBulkWrite("guvi_task.$collection", $bulk);
+   $result = $collection->updateOne(
+        ['user_id' => $userId],               // find by user_id
+        ['$set' => $updateData],              // update these fields
+        ['upsert' => true]                    // create if not exists
+    );
 
 } catch (Throwable $e) {
     // Log but don't stop login
