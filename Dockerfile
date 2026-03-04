@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# 1. Install all required system libraries first
+# 1. Update and install all required system libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libpng-dev \
@@ -13,26 +13,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Configure & install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        mysqli \
-        pdo_mysql \
-        zip \
-        gd \
-        mbstring \
-        json \
-        openssl \
-        curl \
-        bcmath
+# 2. Configure GD separately (needs freetype & jpeg)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
-# Enable Apache mod_rewrite (optional but good for PHP apps)
+# 3. Install extensions one by one (safer, no parallel build issues)
+RUN docker-php-ext-install mysqli \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install gd \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install json \
+    && docker-php-ext-install openssl \
+    && docker-php-ext-install curl \
+    && docker-php-ext-install bcmath
+
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (cache layer)
+# Copy composer files first (for layer caching)
 COPY composer.json composer.lock* ./
 
 # Install Composer
@@ -44,8 +45,8 @@ RUN composer install --no-dev --optimize-autoloader --prefer-dist
 # Copy the rest of the application
 COPY . .
 
-# Expose port
+# Expose port 80
 EXPOSE 80
 
-# Start Apache
+# Start Apache in foreground
 CMD ["apache2-foreground"]
