@@ -1,9 +1,20 @@
 FROM php:8.2-apache
 
-# Install mysqli and pdo_mysql extensions + other common ones
-RUN docker-php-ext-install mysqli pdo_mysql zip
+# Install system dependencies needed for mysqli, pdo_mysql, zip, etc.
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    zlib1g-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        mysqli \
+        pdo_mysql \
+        zip \
+        gd
 
-# Enable Apache mod_rewrite
+# Enable Apache mod_rewrite (for pretty URLs if needed)
 RUN a2enmod rewrite
 
 # Set working directory
@@ -16,10 +27,10 @@ COPY . /var/www/html/
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
-# Expose port
+# Expose port 80
 EXPOSE 80
 
-# Start Apache
+# Start Apache in foreground
 CMD ["apache2-foreground"]
