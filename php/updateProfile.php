@@ -39,9 +39,7 @@ $conn->close();
 try {   
     $client = new Client($mongoUri);
 
-    // Select database and collection
-    $db = $client->guvi_task;           // ← change to your actual DB name
-    $collection = $db->usere;
+    $collection = $client->guvi_task->users;  
 
     $updateData = [
         'user_id'    => $userId,

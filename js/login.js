@@ -14,6 +14,8 @@ $(document).ready(function () {
         password: $("#password").val(),
       },
       success: function (res) {
+        console.log(res);
+
         if (res.status === "success") {
           localStorage.setItem("session", res.token);
           localStorage.setItem("user", JSON.stringify(res.user));
@@ -21,6 +23,8 @@ $(document).ready(function () {
         }
       },
       error: function (res) {
+        console.log(res);
+
         alert(res.responseJSON.message);
       },
     });

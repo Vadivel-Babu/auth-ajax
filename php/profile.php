@@ -27,8 +27,7 @@ $mongoUri="mongodb+srv://vadivelbabu31_db_user:2gUyS2XDeG0lrVR7@cluster0.hrfomwk
 
 try {
     $client = new Client($mongoUri);
-    $db = $client->guvi_task;
-    $collection = $db->users;
+    $collection = $client->guvi_task->users;  
     $userId = $_GET['id'];  
 
     // Fetch one user

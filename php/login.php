@@ -65,8 +65,7 @@ $redis->expire("session:$token", 86400); // 24 hours
 
 try {
     $client = new Client($mongoUri);
-    $db = $client->guvi_task;  // your DB name
-    $collection = $db->users;        // or user_profiles
+    $collection = $client->guvi_task->users;    
 
     $profileData = [
         'user_id'    => (int)($user['id'] ?? 0),
@@ -80,8 +79,7 @@ try {
         ['upsert' => true]
     );
 
-    // Success message for testing
-    echo "MongoDB profile updated successfully!";
+  
 
 } catch (Exception $e) {
     echo "MongoDB error: " . $e->getMessage();
