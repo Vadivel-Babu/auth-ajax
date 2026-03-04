@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# 1. Update and install all required system libraries
+# Clean apt cache after each RUN to keep image small
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libpng-dev \
@@ -13,19 +13,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Configure GD separately (needs freetype & jpeg)
+# Configure GD first (special case)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
-# 3. Install extensions one by one (safer, no parallel build issues)
-RUN docker-php-ext-install mysqli \
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install mbstring \
-    && docker-php-ext-install json \
-    && docker-php-ext-install openssl \
-    && docker-php-ext-install curl \
-    && docker-php-ext-install bcmath
+# Install extensions ONE BY ONE (no && chain, no -j parallel)
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install json
+RUN docker-php-ext-install openssl
+RUN docker-php-ext-install curl
+RUN docker-php-ext-install bcmath
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
@@ -33,7 +33,7 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (for layer caching)
+# Copy composer files first for caching
 COPY composer.json composer.lock* ./
 
 # Install Composer
@@ -45,7 +45,7 @@ RUN composer install --no-dev --optimize-autoloader --prefer-dist
 # Copy the rest of the application
 COPY . .
 
-# Expose port 80
+# Expose port
 EXPOSE 80
 
 # Start Apache in foreground
