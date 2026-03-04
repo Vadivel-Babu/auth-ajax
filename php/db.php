@@ -1,5 +1,5 @@
 <?php
-mysql://root:EXcBGqVMDNTYIxWrqASbMGFPmBpXckoA@shinkansen.proxy.rlwy.net:39464/railway
+//mysql://root:EXcBGqVMDNTYIxWrqASbMGFPmBpXckoA@shinkansen.proxy.rlwy.net:39464/railway
 $host = "shinkansen.proxy.rlwy.net";
 $user = "root";
 $pass = "EXcBGqVMDNTYIxWrqASbMGFPmBpXckoA";
